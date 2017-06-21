@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UbiHSOM Service</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/materialize.js"></script>
+    <script type="text/javascript" src="js/linkedhashset.js"></script>
+    <link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/materialize.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+    <div class="nav-wrapper grey darken-3">
+        <a class="brand-logo center hide-on-small-and-down">&nbsp;&nbsp;&nbsp; UbiHSOM Service</a>
+        <a class="brand-logo hide-on-med-and-up">&nbsp;&nbsp;&nbsp; UbiHSOM Service</a>
+    </div>
+</nav>
+
+<div id="mainContainer" class="container">
+
+    <div class="row">
+        <div class="col s6">
+            <h4>UbiHSOMs list</h4>
+            <div class="row">
+                <div class="input-field col s11">
+                    <select id="hsom-picker">
+                    </select>
+                    <label>UbiHSOMs list</label>
+                </div>
+                <div class="col s1">
+                    <br>
+                    <a class="waves-effect waves-light light-blue-text" href="#" style="margin-top: 7px" id="refresh-hsom-list"><i class="material-icons refresh-list-btn" id="refresh-hsom-list-btn">refresh</i></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="row">
+                        <div class="col s3">
+                            <a class="waves-effect waves-light btn light-green" href="#create-hsom-modal">Create</a>
+                            <div id="create-hsom-modal" class="modal modal-fixed-footer">
+                                <div class="modal-content">
+                                    <h4>Create UbiHSOM</h4>
+                                    <p>Please fill the fields bellow:</p>
+                                    <div class="input-field col s6">
+                                        <input placeholder="Insert the desired name" id="hsom-name" type="text" class="validate">
+                                        <label for="hsom-name">Name</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" onclick="">Cancel</a>
+                                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat green white-text" id="create-hsom">Create</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s3">
+                            <a class="waves-effect waves-light btn red lighten-1" href="#delete-hsom-modal">Delete</a>
+                            <div id="delete-hsom-modal" class="modal modal-fixed-footer">
+                                <div class="modal-content">
+                                    <h4>Delete UbiHSOM</h4>
+                                    <p>Are you sure you want to delete this UbiHSOM?</p>
+                                    <p id="delete-hsom-modal-info"></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat " onclick="">No</a>
+                                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat red white-text lighten-1" onclick="deleteHSOM()">Yes</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s3">
+                            <a class="waves-effect waves-light btn black" id="view-hsom">View</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <br><br><br>
+                            <h4>
+                                Data sources
+                                &nbsp;
+                                <small>
+                                    <a class="waves-effect waves-light black-text" href="#create-data-source-modal"><i class="material-icons" id="create-datasource-btn">add_circle_outline</i></a>
+                                </small>
+                            </h4>
+                            <div id="create-data-source-modal" class="modal modal-fixed-footer">
+                                <div class="modal-content">
+                                    <h4>Create Data source</h4>
+                                    <p>Please fill the fields bellow:</p>
+                                    <div class="input-field col s6">
+                                        <input placeholder="Insert the database name" id="data-source-name" type="text" class="validate">
+                                        <label for="node-name">Name</label>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <input placeholder="Timer (in milliseconds)" id="data-source-timer" type="number" class="validate" value="10">
+                                        <label for="node-timer">Timer</label>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <input placeholder="Randomness" id="data-source-randomness" type="number" class="validate" value="3">
+                                        <label for="data-source-randomness">Randomness</label>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <input placeholder="Insert the selectors in CSV format, e.g.: First, Second" id="data-source-selectors" type="text" class="validate">
+                                        <label for="data-source-selectors">Selectors</label>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <select id="data-source-type-picker" required>
+                                            <option value="" disabled >Select the puller type</option>
+                                            <option value="RANDOM">Random</option>
+                                            <option value="SEQUENTIAL">Sequential</option>
+                                        </select>
+                                        <label>Source</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" onclick="">Cancel</a>
+                                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat green white-text" id="create-data-source">Create</a>
+                                </div>
+                            </div>
+
+                            <ul id="data-source-list" class="collapsible" data-collapsible="expandable"></ul>
+
+                            <div id="create-data-source-edge-modal" class="modal modal-fixed-footer">
+                                <div class="modal-content">
+                                    <h4>Create data source edge</h4>
+                                    <p>Select the nodes to be linked:</p>
+                                    <br>
+                                    <div class="input-field col s6">
+                                        <select id="data-source-picker">
+                                            <option value="" disabled selected>The graph is empty</option>
+                                        </select>
+                                        <label>Source</label>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <select id="data-source-node-target-picker">
+                                            <option value="" disabled selected>The graph is empty</option>
+                                        </select>
+                                        <label>Target</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat " onclick="">Cancel</a>
+                                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat green white-text" id="create-data-source-edge">Create</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col s6">
+            <h4>Graph</h4>
+            <div id="graph-controls" class="row">
+                <div class="col s12">
+                    <a class="waves-effect waves-light black-text" href="#create-node-modal"><i class="material-icons" id="create-node-btn">add_circle_outline</i></a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a class="waves-effect waves-light black-text" href="#remove-node-modal"><i class="material-icons" id="remove-node-btn">remove_circle_outline</i></a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a class="waves-effect waves-light black-text" href="#create-edge-modal"><i class="material-icons" id="create-edge-btn">link</i></a>
+                </div>
+                <div id="create-node-modal" class="modal modal-fixed-footer">
+                    <div class="modal-content">
+                        <h4>Create Node</h4>
+                        <p>Please fill the fields bellow:</p>
+                        <div class="input-field col s6">
+                            <input placeholder="Insert the desired name" id="node-name" type="text" class="validate">
+                            <label for="node-name">Name</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Timer" id="node-timer" type="number" class="validate" value="1">
+                            <label for="node-timer">Timer</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="CSV format, e.g.: First, Second" id="node-order" type="text" class="validate">
+                            <label for="node-order">Order</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="CSV format, e.g.: First, Second" id="node-weight-labels" type="text" class="validate">
+                            <label for="node-weight-labels">Weigh Labels</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Width" id="node-width" type="number" class="validate" value="40">
+                            <label for="node-width">Width</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Height" id="node-height" type="number" class="validate" value="20">
+                            <label for="node-height">Height</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Dimensionality" id="node-dim" type="number" class="validate"  value="2">
+                            <label for="node-dim">Dimensionality</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Alpha-i" id="node-alpha-i" type="number" class="validate"  value="0.1">
+                            <label for="node-alpha-i">Alpha-i</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Alpha-f" id="node-alpha-f" type="number" class="validate"  value="0.08">
+                            <label for="node-alpha-f">Alpha-f</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Sigma-i" id="node-sigma-i" type="number" class="validate"  value="0.6">
+                            <label for="node-sigma-i">Sigma-i</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Sigma-f" id="node-sigma-f" type="number" class="validate"  value="0.2">
+                            <label for="node-sigma-f">Sigma-f</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Beta Value" id="node-beta-value" type="number" class="validate"  value="0.7">
+                            <label for="node-beta-value">Beta Value</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" onclick="">Cancel</a>
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat green white-text" id="create-node">Create</a>
+                    </div>
+                </div>
+                <div id="remove-node-modal" class="modal modal-fixed-footer">
+                    <div class="modal-content">
+                        <h4>Remove UbiHSOM node</h4>
+                        <p>Select the node to be removed from the list:</p>
+                        <br>
+                        <div class="input-field col s7">
+                            <select id="hsom-node-picker">
+                                <option value="" disabled selected>Refresh the UbiHSOM list first</option>
+                            </select>
+                            <label>Nodes</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat " onclick="">No</a>
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat red white-text lighten-1" id="remove-node">Yes</a>
+                    </div>
+                </div>
+                <div id="create-edge-modal" class="modal modal-fixed-footer">
+                    <div class="modal-content">
+                        <h4>Create UbiHSOM edge</h4>
+                        <p>Select the nodes to be linked:</p>
+                        <br>
+                        <div class="input-field col s6">
+                            <select id="hsom-source-picker">
+                                <option value="" disabled selected>The graph is empty</option>
+                            </select>
+                            <label>Source</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <select id="hsom-target-picker">
+                                <option value="" disabled selected>The graph is empty</option>
+                            </select>
+                            <label>Target</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat " onclick="">Cancel</a>
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat green white-text" id="create-edge">Create</a>
+                    </div>
+                </div>
+            </div>
+            <div id="graph"></div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript" src="js/build/sigma.min.js"></script>
+<script type="text/javascript" src="js/build/plugins/sigma.plugins.dragNodes.min.js"></script>
+<script type="text/javascript" src="js/build/plugins/sigma.layout.forceAtlas2.min.js"></script>
+<script type="text/javascript" src="js/hsomgraph.js"></script>
+<script type="text/javascript" src="js/hsom-service.js"></script>
+</body>
+</html>
